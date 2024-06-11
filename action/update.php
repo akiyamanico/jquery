@@ -3,9 +3,9 @@
 include('./conn.php');
 
 $id = $_GET['id'];
-$nama  = $_GET['nama'];
-$email = $_GET['email'];
-$alamat = $_GET['alamat'];
+$nama  = $_POST['nama'];
+$email = $_POST['email'];
+$alamat = $_POST['alamat'];
 
 $update = $conn->query("UPDATE user SET nama='$nama', email='$email', alamat='$alamat' WHERE id='$id'");
 

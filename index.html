@@ -54,11 +54,9 @@
           url = "action/simpan.php";
         } else {
           url = "action/update.php?id=" + id_edit;
-          console.log(nama);
-          console.log(email);
-          console.log(alamat);
+    
         }
-
+        console.log(url);
         $.ajax({
           url: url,
           type: "POST",
@@ -71,6 +69,7 @@
           success: function (response) {
             if (response.status === 200) {
               alert(response.pesan);
+              getdata();
               datakosong();
               id_edit = "";
             }
