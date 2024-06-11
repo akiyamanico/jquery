@@ -38,15 +38,11 @@
     </table>
     <script>
       var html = "";
-
+      var url = "";
+      var id_edit = "";
       var nama = "";
       var email = "";
       var alamat = "";
-      if (id_edit != ''){
-        url = 'action/simpan.php';
-      }else{
-        url = '';
-      }
       $(document).ready(function () {
         getdata();
       });
@@ -54,6 +50,14 @@
         nama = $("#nama").val();
         email = $("#email").val();
         alamat = $("#alamat").val();
+        if (id_edit == "") {
+          url = "action/simpan.php";
+        } else {
+          url = "action/update.php?id=" + id_edit;
+          console.log(nama);
+          console.log(email);
+          console.log(alamat);
+        }
 
         $.ajax({
           url: url,
@@ -68,6 +72,7 @@
             if (response.status === 200) {
               alert(response.pesan);
               datakosong();
+              id_edit = "";
             }
           },
           error: function (error) {
@@ -82,10 +87,11 @@
       }
       function getdata() {
         $.ajax({
-          url: 'action/fetch.php',
+          url: "action/fetch.php",
           type: "GET",
           dataType: "JSON",
           success: function (response) {
+            html =''
             for (let i = 0; i < response.data.length; i++) {
               console.log(response.data[i].nama);
               html +=
@@ -106,32 +112,51 @@
                 "<button onclick='edit(" +
                 response.data[i].id +
                 ")'>Edit</button>" +
+                "<button onclick='hapus(" +
+                response.data[i].id +
+                ")'>Hapus</button>" +
                 "</td>";
+                
+                
             }
-            $('#isidata').html(html);
+            $("#isidata").html(html);
           },
           error: function (error) {
             console.log(error);
           },
         });
       }
-      // EDIT DATA 
-      var id_edit = '';
+      // EDIT DATA
+      var id_edit = "";
       function edit(id) {
-      $.ajax({
-        url: "action/edit.php?id="+id,
-        type: "GET",
-        dataType: "JSON",
-        success: function (response) {
-          id_edit = response.data.id;
-          $("#nama").val(response.data.nama);
-          $("#alamat").val(response.data.alamat);
-          $("#email").val(response.data.email);
-        },
-        error: function (error) {
-          console.log('error', error);
-        },
-      })
+        $.ajax({
+          url: "action/edit.php?id=" + id,
+          type: "GET",
+          dataType: "JSON",
+          success: function (response) {
+            id_edit = response.data.id;
+            $("#nama").val(response.data.nama);
+            $("#alamat").val(response.data.alamat);
+            $("#email").val(response.data.email);
+          },
+          error: function (error) {
+            console.log("error", error);
+          },
+        });
+      }
+      function hapus(id) {
+        $.ajax({
+          url: "action/hapus.php?id=" + id,
+          type: "GET",
+          dataType: "JSON",
+          success: function (response) {
+            getdata();
+            console.log("success", response);
+          },
+          error: function (response) {
+            console.log("error", response);
+          },
+        });
       }
     </script>
   </body>
