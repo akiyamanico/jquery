@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <!-- Form Input -->
+    <label for="">Nama</label>
+    <input type="text" name="nama" id="nama" />
+    <br />
+    <label for="">Email</label>
+    <input type="text" name="email" id="email" />
+    <br />
+    <label for="">Alamat</label>
+    <input type="text" name="alamat" id="alamat" />
+    <br />
+    <button onclick="simpan()" type="button">Simpan</button>
+    <!-- Table Data -->
+    <br />
+    <table style="border: 1px solid">
+      <thead>
+        <tr style="border: 1px solid">
+          <th style="border: 1px solid">No</th>
+          <th style="border: 1px solid">Nama</th>
+          <th style="border: 1px solid">Email</th>
+          <th style="border: 1px solid">Alamat</th>
+          <th style="border: 1px solid">Action</th>
+        </tr>
+      </thead>
+      <tbody id="isidata"></tbody>
+    </table>
+    <script>
+      var html = "";
+
+      var nama = "";
+      var email = "";
+      var alamat = "";
+      if (id_edit != ''){
+        url = 'action/simpan.php';
+      }else{
+        url = '';
+      }
+      $(document).ready(function () {
+        getdata();
+      });
+      function simpan() {
+        nama = $("#nama").val();
+        email = $("#email").val();
+        alamat = $("#alamat").val();
+
+        $.ajax({
+          url: url,
+          type: "POST",
+          dataType: "JSON",
+          data: {
+            nama: nama,
+            email: email,
+            alamat: alamat,
+          },
+          success: function (response) {
+            if (response.status === 200) {
+              alert(response.pesan);
+              datakosong();
+            }
+          },
+          error: function (error) {
+            console.log(error);
+          },
+        });
+      }
+      function datakosong() {
+        $("#nama").val("");
+        $("#email").val("");
+        $("#alamat").val("");
+      }
+      function getdata() {
+        $.ajax({
+          url: 'action/fetch.php',
+          type: "GET",
+          dataType: "JSON",
+          success: function (response) {
+            for (let i = 0; i < response.data.length; i++) {
+              console.log(response.data[i].nama);
+              html +=
+                "<tr>" +
+                "<td>" +
+                i +
+                "</td>" +
+                "<td>" +
+                response.data[i].nama +
+                "</td>" +
+                "<td>" +
+                response.data[i].email +
+                "</td>" +
+                "<td>" +
+                response.data[i].alamat +
+                "</td>" +
+                "<td>" +
+                "<button onclick='edit(" +
+                response.data[i].id +
+                ")'>Edit</button>" +
+                "</td>";
+            }
+            $('#isidata').html(html);
+          },
+          error: function (error) {
+            console.log(error);
+          },
+        });
+      }
+      // EDIT DATA 
+      var id_edit = '';
+      function edit(id) {
+      $.ajax({
+        url: "action/edit.php?id="+id,
+        type: "GET",
+        dataType: "JSON",
+        success: function (response) {
+          id_edit = response.data.id;
+          $("#nama").val(response.data.nama);
+          $("#alamat").val(response.data.alamat);
+          $("#email").val(response.data.email);
+        },
+        error: function (error) {
+          console.log('error', error);
+        },
+      })
+      }
+    </script>
+  </body>
+</html>
